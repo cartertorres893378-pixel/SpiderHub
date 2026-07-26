@@ -1,7 +1,7 @@
 -- main.lua
-print("[SpiderHub] Initializing Layout Modules...")
+print("[SpiderHub] Fetching UI Framework from cloud...")
 
--- The repository link pointing to your UI source file on GitHub
+-- The link to your public raw AdminUI source file
 local rawModuleUrl = "https://githubusercontent.com"
 
 local success, response = pcall(function()
@@ -9,11 +9,11 @@ local success, response = pcall(function()
 end)
 
 if success then
+    -- Convert the downloaded text string into executable code
     local compiledCode, err = loadstring(response)
     if compiledCode then
-        local Module = compiledCode()
-        Module.CreateMenu()
-        print("[SpiderHub] UI compiled successfully onto client. Press ALT to toggle visibility.")
+        task.spawn(compiledCode)
+        print("[SpiderHub] Bootloader complete.")
     else
         warn("[SpiderHub] Framework Compile Failed: " .. tostring(err))
     end
