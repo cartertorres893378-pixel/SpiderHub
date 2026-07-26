@@ -1,17 +1,11 @@
--- =============================================================================
---🕷️ SPIDERHUB COMPREHENSIVE COMBINED LOCAL SCRIPT
--- Paste this directly into a LocalScript inside StarterPlayerScripts to run instantly.
--- =============================================================================
-
+-- modules/AdminUI.lua
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 local Workspace = game:GetService("Workspace")
 local TweenService = game:GetService("TweenService")
 local UserInputService = game:GetService("UserInputService")
 
-local AdminUI = {}
-
-function AdminUI.CreateMenu()
+local function CreateMenu()
 	local player = Players.LocalPlayer
 	local playerGui = player:WaitForChild("PlayerGui")
 	
@@ -288,3 +282,13 @@ function AdminUI.CreateMenu()
 	---------------------------------------------------------
 	-- INTERFACE ANIMATION & ACCESSIBILITY CONFIG
 	---------------------------------------------------------
+	local menuVisible = true
+	local toggleDebounce = false
+	
+	local function toggleMenu()
+		if toggleDebounce then return end
+		toggleDebounce = true
+		menuVisible = not menuVisible
+		
+		if menuVisible then
+			mainFrame.Visible = true
