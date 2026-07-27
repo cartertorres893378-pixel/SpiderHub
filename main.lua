@@ -1,22 +1,30 @@
--- main.lua
-print("[SpiderHub] Fetching UI Framework from cloud...")
-
--- The link to your public raw AdminUI source file
-local rawModuleUrl = "https://githubusercontent.com"
-
-local success, response = pcall(function()
-    return game:HttpGet(rawModuleUrl)
+-- Isolated Master Loader for SpiderHub Architecture
+local success, moduleSource = pcall(function()
+    return game:HttpGet("https://githubusercontent.com")
 end)
 
-if success then
-    -- Convert the downloaded text string into executable code
-    local compiledCode, err = loadstring(response)
-    if compiledCode then
-        task.spawn(compiledCode)
-        print("[SpiderHub] Bootloader complete.")
+if success and moduleSource then
+    if string.find(moduleSource, "404: Not Found") or string.len(moduleSource) < 10 then
+        warn("[SpiderHub Error]: Invalid GitHub raw path direction or private repository limits.")
+        return
+    end
+
+    local loader, compileError = loadstring(moduleSource)
+    if loader then
+        local status, executionError = pcall(function()
+            local AdminUI = loader()
+            if AdminUI and type(AdminUI) == "table" and AdminUI.CreateMenu then
+                AdminUI.CreateMenu()
+            else
+                warn("[SpiderHub Error]: AdminUI file failed to export structural functions.")
+            end
+        end)
+        if not status then
+            warn("[SpiderHub Runtime Error]: " .. tostring(executionError))
+        end
     else
-        warn("[SpiderHub] Framework Compile Failed: " .. tostring(err))
+        warn("[SpiderHub Compilation Error]: " .. tostring(compileError))
     end
 else
-    warn("[SpiderHub] Communication failure during web asset sync.")
+    warn("[SpiderHub Network Error]: Target assets could not be resolved from external GitHub nodes.")
 end
